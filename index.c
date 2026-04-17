@@ -269,7 +269,31 @@ int index_add(Index *index, const char *path) {
         return -1;
     }
 
+    FILE *f = fopen(path, "rb");
+    if (!f) return -1;
+
+    size_t len = (size_t)st.st_size;
+    void *data = malloc(len ? len : 1);
+    if (!data) {
+        fclose(f);
+        return -1;
+    }
+    if (len > 0 && fread(data, 1, len, f) != len) {
+        free(data);
+        fclose(f);
+        return -1;
+    }
+    fclose(f);
+
+    ObjectID blob_id;
+    if (object_write(OBJ_BLOB, data, len, &blob_id) != 0) {
+        free(data);
+        return -1;
+    }
+    free(data);
+
     // TODO: Implement rest
     (void)index;
     return -1;
+}
 }
