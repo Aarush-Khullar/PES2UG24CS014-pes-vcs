@@ -226,6 +226,13 @@ int object_read(const ObjectID *id, ObjectType *type_out, void **data_out, size_
     }
     fclose(f);
 
+    ObjectID actual;
+    compute_hash(buffer, (size_t)file_size, &actual);
+    if (memcmp(actual.hash, id->hash, HASH_SIZE) != 0) {
+        free(buffer);
+        return -1;
+    }
+
     // TODO: Implement rest
     free(buffer);
     (void)type_out; (void)data_out; (void)len_out;
