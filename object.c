@@ -233,6 +233,28 @@ int object_read(const ObjectID *id, ObjectType *type_out, void **data_out, size_
         return -1;
     }
 
+    void *nul = memchr(buffer, '\0', (size_t)file_size);
+    if (!nul) {
+        free(buffer);
+        return -1;
+    }
+
+    size_t header_len = (uint8_t *)nul - buffer;
+    char header[64];
+    if (header_len >= sizeof(header)) {
+        free(buffer);
+        return -1;
+    }
+    memcpy(header, buffer, header_len);
+    header[header_len] = '\0';
+
+    char type_str[16];
+    size_t data_len;
+    if (sscanf(header, "%15s %zu", type_str, &data_len) != 2) {
+        free(buffer);
+        return -1;
+    }
+
     // TODO: Implement rest
     free(buffer);
     (void)type_out; (void)data_out; (void)len_out;
