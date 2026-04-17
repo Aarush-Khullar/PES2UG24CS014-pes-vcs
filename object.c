@@ -159,9 +159,20 @@ int object_write(ObjectType type, const void *data, size_t len, ObjectID *id_out
         return -1;
     }
 
-    // TODO: Implement rest
+    if (rename(tmp_path, final_path) != 0) {
+        unlink(tmp_path);
+        free(object);
+        return -1;
+    }
+
+    int dirfd = open(shard_dir, O_RDONLY);
+    if (dirfd >= 0) {
+        fsync(dirfd);
+        close(dirfd);
+    }
+
     free(object);
-    return -1;
+    return 0;
 }
 
 // Read an object from the store.
