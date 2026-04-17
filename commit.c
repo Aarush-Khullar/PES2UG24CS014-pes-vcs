@@ -199,6 +199,12 @@ int commit_create(const char *message, ObjectID *commit_id_out) {
 
     if (tree_from_index(&commit.tree) != 0) return -1;
 
+    if (head_read(&commit.parent) == 0) {
+        commit.has_parent = 1;
+    } else {
+        commit.has_parent = 0;
+    }
+
     // TODO: Implement rest
     (void)message; (void)commit_id_out;
     return -1;
