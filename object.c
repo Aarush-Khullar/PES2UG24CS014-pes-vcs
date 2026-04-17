@@ -113,9 +113,14 @@ int object_write(ObjectType type, const void *data, size_t len, ObjectID *id_out
     memcpy(object, header, (size_t)header_len);
     if (len > 0) memcpy(object + header_len, data, len);
 
+    compute_hash(object, total_len, id_out);
+    if (object_exists(id_out)) {
+        free(object);
+        return 0;
+    }
+
     // TODO: Implement rest
     free(object);
-    (void)id_out;
     return -1;
 }
 
