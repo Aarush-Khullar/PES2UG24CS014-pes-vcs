@@ -215,8 +215,7 @@ int tree_from_index(ObjectID *id_out) {
         return -1;
     }
 
-    // TODO: Implement recursive tree building
+    int rc = write_tree_level(index, "", id_out);
     free(index);
-    (void)id_out;
-    return -1;
+    return rc;
 }
